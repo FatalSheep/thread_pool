@@ -6,10 +6,6 @@
     #include <condition_variable>
     #include <stack>
     #include <queue>
-    #include <stdexcept>
-
-    #include <iostream>
-    using namespace std;
 
     class thread_pool {
     private:
