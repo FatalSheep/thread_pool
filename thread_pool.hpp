@@ -7,6 +7,9 @@
     #include <stack>
     #include <queue>
 
+    #include <iostream>
+    using namespace std;
+
     class thread_pool {
     private:
         //The pool of worker threads.
@@ -22,16 +25,20 @@
 
     public:
         thread_pool(size_t thread_count) {
+            add_threads(thread_count);
+        };
+
+        void threads(size_t thread_count) {
             /*
                 Launch threads that wait for work to be queued and run work if they can lock it.
             */
-            for(size_t i = 0; i < thread_count; i++) {
+            for (size_t i = 0; i < thread_count; i++) {
                 auto thread_wait = [this] {
                     std::function<void()> work;
                     std::mutex _mutex;
 
                     //Keep the thread running indefinitely.
-                    while(true) {
+                    while (true) {
                         //Wait for work and make sure to run only if the thread_pool is not halted.
                         std::unique_lock<std::mutex> thread_lock(_mutex);
                         work_condition.wait(thread_lock, [this] { return (work_halted || !work_queue.empty()); });
@@ -54,7 +61,7 @@
                 //Add the new thread to the threead_pool.
                 pool.push(std::thread(thread_wait));
             }
-        };
+        }
 
         template<class _Fx>
         void push(_Fx&& func) {
@@ -84,7 +91,7 @@
 
             //Halt work and empty the work queue.
             work_halted = true;
-            work_condition.notify_all();
+            work_condition.notify_one();
             while(work_queue.size() > 0) work_queue.pop();
 
             //Empty the thread pool anbd safely free up threads with join().
