@@ -74,6 +74,21 @@
             work_mutex.unlock();
             work_condition.notify_one();
         };
+        
+        template<typename T, class _Fx>
+        void push(T* obj, _Fx&& func) {
+            //Create a new task function
+            std::function<void()> task(std::bind(func, obj));
+
+            if (work_halted)
+                return;
+
+            //Lock the work queue, add work to it, then unlock it and notify one thread for work.
+            work_mutex.lock();
+            work_queue.push(task);
+            work_mutex.unlock();
+            work_condition.notify_one();
+        };
 
         void halt() {
             //Notify all threads to halt work.
