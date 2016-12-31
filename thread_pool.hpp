@@ -25,7 +25,7 @@
 
     public:
         thread_pool(size_t thread_count) {
-            add_threads(thread_count);
+            threads(thread_count);
         };
 
         void threads(size_t thread_count) {
