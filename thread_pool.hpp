@@ -7,9 +7,6 @@
     #include <stack>
     #include <queue>
 
-    #include <iostream>
-    using namespace std;
-
     class thread_pool {
     private:
         //The pool of worker threads.
